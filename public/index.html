@@ -4,47 +4,91 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SOP-ify | AI SOP Generator</title>
+    <meta name="description" content="Instantly generate professional Standard Operating Procedures from rough notes using AI.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<div class="container">
-    <header>
-        <h1>SOP-ify</h1>
-        <p class="subtitle">Turn brain dumps into professional Standard Operating Procedures instantly.</p>
-    </header>
+    <div class="background-glow"></div>
 
-    <main>
-        <!-- Input Section -->
-        <section class="input-section">
-            <label for="process-input">Describe your process (Rough notes/Brain dump):</label>
-            <textarea id="process-input" placeholder="e.g. Closing the shop: Check register, count cash, lock back door, turn off lights, set alarm code 1234..."></textarea>
-            <button id="generate-btn">Generate SOP</button>
-        </section>
+    <div class="app-container">
+        <header>
+            <div class="logo">
+                <i class="ph-fill ph-notebook"></i>
+                <span>SOP-ify</span>
+            </div>
+            <p class="subtitle">Turn chaos into clarity. Professional SOPs in seconds.</p>
+        </header>
 
-        <!-- Loading Indicator -->
-        <div id="loading" class="loading">
-            <div class="spinner"></div>
-            <p>Consulting the Operations Manager...</p>
-        </div>
-
-        <!-- Output Section -->
-        <section id="result-section" class="output-section">
-            <div class="output-header">
-                <h2>Generated SOP</h2>
-                <div class="output-actions">
-                    <button id="print-btn">Print / Save PDF</button>
-                    <button id="copy-btn">Copy to Clipboard</button>
+        <main>
+            <!-- Input Section -->
+            <section class="card input-card" aria-labelledby="input-label">
+                <div class="card-header">
+                    <label id="input-label" for="process-input">
+                        <i class="ph ph-pen-nib"></i> Input Process
+                    </label>
+                    <span class="hint">Rough notes, bullet points, or brain dumps</span>
                 </div>
-            </div>
-            <div id="sop-content">
-                <!-- AI Generated Content Will Go Here -->
-            </div>
-        </section>
-    </main>
-</div>
+                
+                <div class="textarea-wrapper">
+                    <textarea id="process-input" placeholder="e.g., Opening the coffee shop: arrive at 5am, disarm alarm (code 9999), turn on espresso machine, check milk stock..."></textarea>
+                    <div class="focus-border"></div>
+                </div>
 
-<script src="app.js"></script>
+                <div class="actions">
+                    <button id="generate-btn" class="btn btn-primary">
+                        <span class="btn-text">Generate SOP</span>
+                        <i class="ph-bold ph-magic-wand"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Loading State -->
+            <div id="loading" class="loading-state" aria-hidden="true" style="display: none;">
+                <div class="loader">
+                    <div class="loader-ring"></div>
+                    <div class="loader-ring"></div>
+                </div>
+                <p>Consulting the expert Operations Manager...</p>
+            </div>
+
+            <!-- Output Section -->
+            <section id="result-section" class="card result-card" aria-live="polite" style="display: none;">
+                <div class="result-toolbar">
+                    <h2><i class="ph ph-file-text"></i> Generated SOP</h2>
+                    <div class="toolbar-actions">
+                        <button id="copy-btn" class="btn btn-icon" aria-label="Copy to Clipboard" title="Copy to Clipboard">
+                            <i class="ph ph-copy"></i>
+                        </button>
+                        <button id="print-btn" class="btn btn-icon" aria-label="Print or Save PDF" title="Print / Save PDF">
+                            <i class="ph ph-printer"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="sop-content" class="sop-document">
+                    <!-- AI Content Injected Here -->
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 SOP-ify. Powered by Google Gemini.</p>
+        </footer>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="app.js"></script>
 </body>
 </html>
