@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOP-ify | AI SOP Generator</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>SOP-ify</h1>
+        <p class="subtitle">Turn brain dumps into professional Standard Operating Procedures instantly.</p>
+    </header>
+
+    <main>
+        <!-- Input Section -->
+        <section class="input-section">
+            <label for="process-input">Describe your process (Rough notes/Brain dump):</label>
+            <textarea id="process-input" placeholder="e.g. Closing the shop: Check register, count cash, lock back door, turn off lights, set alarm code 1234..."></textarea>
+            <button id="generate-btn">Generate SOP</button>
+        </section>
+
+        <!-- Loading Indicator -->
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Consulting the Operations Manager...</p>
+        </div>
+
+        <!-- Output Section -->
+        <section id="result-section" class="output-section">
+            <div class="output-header">
+                <h2>Generated SOP</h2>
+                <div class="output-actions">
+                    <button id="print-btn">Print / Save PDF</button>
+                    <button id="copy-btn">Copy to Clipboard</button>
+                </div>
+            </div>
+            <div id="sop-content">
+                <!-- AI Generated Content Will Go Here -->
+            </div>
+        </section>
+    </main>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
