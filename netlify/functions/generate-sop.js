@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import Groq from "groq-sdk";
 
 export const handler = async (event, context) => {
   // Only allow POST requests
@@ -10,7 +10,6 @@ export const handler = async (event, context) => {
   }
 
   try {
-    // 1. Parse the request body
     const body = JSON.parse(event.body);
     const userPrompt = body.prompt;
 
@@ -21,35 +20,45 @@ export const handler = async (event, context) => {
       };
     }
 
-    // 2. Initialize Gemini API
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) {
-      console.error("GEMINI_API_KEY is missing in environment variables.");
+      console.error("GROQ_API_KEY is missing in environment variables.");
       return {
         statusCode: 500,
         body: JSON.stringify({ error: "Server configuration error (API Key missing)" }),
       };
     }
 
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    // Initialize Groq
+    const groq = new Groq({ apiKey });
 
-    // 3. Construct the prompt
-    const systemInstruction = `You are an expert Operations Manager. Convert the following raw process description into a professional Standard Operating Procedure (SOP). Use HTML formatting. Structure it with these sections: <h2>Objective</h2>, <ul>Prerequisites</ul>, <ol>Step-by-Step Instructions</ol>, and <div class='warning'>Safety/Troubleshooting</div>. Keep the tone professional and actionable. Do not include markdown code blocks (like \`\`\`html), just return the raw HTML content suitable for embedding inside a div.`;
+    // Construct the prompt
+    // Note: We use the 'system' role for the instruction and 'user' for the raw notes.
+    const systemInstruction = `You are an expert Operations Manager. Convert the raw process description into a professional Standard Operating Procedure (SOP).
     
-    const fullPrompt = `${systemInstruction}\n\nRaw Description:\n${userPrompt}`;
+    Structure your response using ONLY the following HTML tags (no markdown, no \`\`\`html wrapper):
+    - <h2>Objective</h2>
+    - <ul>Prerequisites</ul>
+    - <ol>Step-by-Step Instructions</ol>
+    - <div class='warning'>Safety/Troubleshooting</div>
+    
+    Keep the tone professional, concise, and actionable.`;
 
-    // 4. Generate Content
-    const result = await model.generateContent(fullPrompt);
-    const response = await result.response;
-    const text = response.text();
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [
+        { role: "system", content: systemInstruction },
+        { role: "user", content: `Raw Description:\n${userPrompt}` }
+      ],
+      model: "llama3-70b-8192", // Using Llama 3 70B for high quality
+      temperature: 0.5,
+      max_tokens: 1024,
+    });
 
-    // 5. Return success
+    const text = chatCompletion.choices[0]?.message?.content || "No content generated.";
+
     return {
       statusCode: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ content: text }),
     };
 
