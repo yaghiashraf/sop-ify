@@ -1,4 +1,4 @@
-import Groq from "groq-sdk";
+import { HfInference } from "@huggingface/inference";
 
 export const handler = async (event, context) => {
   // Only allow POST requests
@@ -20,23 +20,21 @@ export const handler = async (event, context) => {
       };
     }
 
-    const apiKey = process.env.GROQ_API_KEY;
+    const apiKey = process.env.HF_API_TOKEN;
     if (!apiKey) {
-      console.error("GROQ_API_KEY is missing in environment variables.");
+      console.error("HF_API_TOKEN is missing in environment variables.");
       return {
         statusCode: 500,
         body: JSON.stringify({ error: "Server configuration error (API Key missing)" }),
       };
     }
 
-    // Initialize Groq
-    const groq = new Groq({ apiKey });
+    const hf = new HfInference(apiKey);
 
-    // Construct the prompt
-    // Note: We use the 'system' role for the instruction and 'user' for the raw notes.
     const systemInstruction = `You are an expert Operations Manager. Convert the raw process description into a professional Standard Operating Procedure (SOP).
     
-    Structure your response using ONLY the following HTML tags (no markdown, no \`\`\`html wrapper):
+    Structure your response using ONLY the following HTML tags (no markdown, no 
+    wrapper):
     - <h2>Objective</h2>
     - <ul>Prerequisites</ul>
     - <ol>Step-by-Step Instructions</ol>
@@ -44,17 +42,18 @@ export const handler = async (event, context) => {
     
     Keep the tone professional, concise, and actionable.`;
 
-    const chatCompletion = await groq.chat.completions.create({
+    const response = await hf.chatCompletion({
+      model: "mistralai/Mistral-7B-Instruct-v0.3",
       messages: [
         { role: "system", content: systemInstruction },
-        { role: "user", content: `Raw Description:\n${userPrompt}` }
+        { role: "user", content: `Raw Description:
+${userPrompt}` }
       ],
-      model: "llama3-70b-8192", // Using Llama 3 70B for high quality
-      temperature: 0.5,
-      max_tokens: 1024,
+      max_tokens: 1500,
+      temperature: 0.5
     });
 
-    const text = chatCompletion.choices[0]?.message?.content || "No content generated.";
+    const text = response.choices[0].message.content;
 
     return {
       statusCode: 200,
